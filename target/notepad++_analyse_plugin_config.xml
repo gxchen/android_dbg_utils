@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<AnalyseDoc xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="./AnalyseDoc.xsd">
+    <SearchText color="green">Opening camera</SearchText>
+    <SearchText color="green">PROFILE_OPEN_CAMERA</SearchText>
+    <SearchText searchType="regex" color="liteBlue">start_preview|startPreview</SearchText>
+    <SearchText searchType="regex" color="liteBlue">stop_preview|stopPreview</SearchText>
+    <SearchText searchType="regex" color="blue" bgColor="veryLiteGrey">PROFILE_STOP_PREVIEW|PROFILE_START_PREVIEW|PROFILE_FIRST_PREVIEW_FRAME</SearchText>
+    <SearchText searchType="regex" color="beige">startVideoRecording|stopVideoRecording</SearchText>
+    <SearchText searchType="regex" matchCase="true" color="beige">start_recording|startRecording</SearchText>
+    <SearchText searchType="regex" matchCase="true" color="beige">stop_recording|stopRecording</SearchText>
+    <SearchText searchType="regex" color="brown" bgColor="veryLiteGrey">PROFILE_START_RECORDING|PROFILE_STOP_RECORDING|PROFILE_FIRST_RECORD_FRAME</SearchText>
+    <SearchText searchType="regex" color="deepPurple">takePicture|take_picture</SearchText>
+    <SearchText searchType="regex" color="deepPurple">capture_channel_cb_routine|zsl_channel_cb</SearchText>
+    <SearchText searchType="regex" color="deepPurple" bgColor="veryLiteGrey">PROFILE_TAKE_PICTURE|PROFILE_SHUTTER_LAG|PROFILE_YUV_CB_TO_HAL</SearchText>
+    <SearchText searchType="regex" color="orange">pproc_module_handle_reprocess_online|postproc_channel_cb_routine</SearchText>
+    <SearchText color="beige">encodeData</SearchText>
+    <SearchText color="brown">JpegPictureCallback</SearchText>
+    <SearchText color="brown" bgColor="veryLiteGrey">PROFILE_JPEG</SearchText>
+    <SearchText doSearch="false" searchType="regex" color="liteBlue">auto_focus|cancel_auto_focus|processAutoFocusEvent</SearchText>
+    <SearchText doSearch="false" searchType="regex" color="grey">startEncode|startThumbnailEncode|EncodeComplete|CompleteMainImage</SearchText>
+    <SearchText doSearch="false" searchType="regex" color="grey">isp_util_dump_stream_planes</SearchText>
+    <SearchText searchType="regex" color="grey">SENSOR_SET_RESOLUTION|SENSOR_START_STREAM</SearchText>
+    <SearchText doSearch="false" color="green">mm_camera_open</SearchText>
+    <SearchText color="grey">mct_pipeline_add_stream_to_linked_streams</SearchText>
+    <SearchText color="grey">mct_stream_start_link</SearchText>
+    <SearchText matchCase="true" bgColor="yellow" comment="fatal error: segment fault">SEGV</SearchText>
+    <SearchText matchCase="true" color="grey" bgColor="yellow">ANR</SearchText>
+    <SearchText searchType="regex" bgColor="yellow">RuntimeException</SearchText>
+    <SearchText doSearch="false" searchType="regex" bgColor="yellow">fail|error|fatal</SearchText>
+</AnalyseDoc>
