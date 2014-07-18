@@ -2,6 +2,7 @@
 
 import os
 import sys
+import time
 from subprocess import PIPE
 from subprocess import Popen
 
@@ -22,7 +23,10 @@ def cmdline(command):
 		print("[ERR] err in running cmd (" + command + ")")
 		return None
 	else:
-		return out
+		# type of out here is **bytes**,
+		# we need to convert it to 'str' explicitily for python3
+		return out.decode()
+
 	#return process.communicate()
 	#return process.communicate()[0]
 
@@ -53,15 +57,17 @@ def get_process_info(query_name):
 	#query_name = 'mediaserver'
 
 	adb_ps_cmd = STR_PS_PREFIX + query_name
-	output = cmdline(adb_ps_cmd)
-	#print("[DBG] adb ps cmd output\n" + output)
 
-	process_info = output.split('\n')[1]
+	str_output = cmdline(adb_ps_cmd)
+
+	# print("[DBG] adb ps cmd output\n" + str_output)
+
+	process_info = str_output.split('\n')[1]
 	if (not process_info) or (process_info == ''):
-		print("[ERR] can't find process: " + query_name)
+		# print("[ERR] can't find process: " + query_name)
 		return (0, None)
 
-	#print("[DBG] process info: " + process_info)
+	# print("[DBG] process info: " + process_info)
 
 	p_info_list = process_info.split()
 	pid   = p_info_list[1]
@@ -71,7 +77,7 @@ def get_process_info(query_name):
 
 
 def kill_process(pid):
-	print('\n[WRN] killing process: ' + pid)
+	print('\n[WRN] killing process: ' + pid + '\n')
 	os.system('adb shell kill ' + pid)
 
 
@@ -85,13 +91,28 @@ def main():
 		print("[ERR] incorrect arguments!!")
 		return
 
-	(pid, pname) = get_process_info(ps_query_name)
-	print("\n[INF] <<<<<< PROCESS INFO >>>>>>\n[INF] Full name: " + pname + '\n[INF] PID: ' + pid)
 
+	(pid, pname) = get_process_info(ps_query_name)
+	if int(pid) <= 0:
+		print("[ERR] can't find process: " + ps_query_name)
+		return
+
+
+	print("\n[INF] <<<<<< PROCESS INFO >>>>>>\n[INF] Full name: " + pname + '\n[INF] PID: ' + pid)
 	kill_process(pid)
 
-	(pid, pname) = get_process_info(ps_query_name)
-	print("\n[INF] <<<<<< PROCESS INFO (after kill) >>>>>>\n[INF] Full name: " + pname + '\n[INF] PID: ' + pid)
+
+	while True:
+		(pid, pname) = get_process_info(ps_query_name)
+
+		if int(pid) > 0:
+			print("\n[INF] <<<<<< PROCESS INFO (after kill) >>>>>>\n[INF] Full name: " + pname + '\n[INF] PID: ' + pid)
+			break
+
+		time.sleep(1)
+		print("[INF] waiting for process to restart...")
+
+
 
 if __name__ == '__main__':
 	main()
