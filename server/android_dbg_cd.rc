@@ -24,6 +24,7 @@
 #
 declare -A SUB_MODULE_LIST
 SUB_MODULE_LIST['camera_apk']='packages/apps/Camera2'
+SUB_MODULE_LIST['snapdragon_cam_apk']='packages/apps/SnapdragonCamera'
 SUB_MODULE_LIST['gallery_apk']='packages/apps/Gallery2'
 SUB_MODULE_LIST['camera_hal']='hardware/qcom/camera'
 SUB_MODULE_LIST['mm_camera']='vendor/qcom/proprietary/mm-camera'
@@ -33,10 +34,12 @@ SUB_MODULE_LIST['dts']='kernel/arch/arm/boot/dts'
 SUB_MODULE_LIST['frameworks']='frameworks'
 SUB_MODULE_LIST['frameworks_base']='frameworks/base'
 SUB_MODULE_LIST['frameworks_av']='frameworks/av'
-SUB_MODULE_LIST['output']='out/target/product/msm8610'
+SUB_MODULE_LIST['fastmmi']='vendor/qcom/proprietary/fastmmi'
+
 
 declare -A MOD_ABBR_DICT
 MOD_ABBR_DICT['camera_apk']='cam app apk'
+MOD_ABBR_DICT['snapdragon_cam_apk']='scam snap'
 MOD_ABBR_DICT['gallery_apk']='pic gal'
 MOD_ABBR_DICT['camera_hal']='hal'
 MOD_ABBR_DICT['mm_camera']='mm'
@@ -46,7 +49,7 @@ MOD_ABBR_DICT['dts']='dts'
 MOD_ABBR_DICT['frameworks']='fw'
 MOD_ABBR_DICT['frameworks_base']='base'
 MOD_ABBR_DICT['frameworks_av']='av'
-MOD_ABBR_DICT['output']='out'
+MOD_ABBR_DICT['fastmmi']='mmi'
 
 ################################################
 
@@ -93,6 +96,7 @@ parse_input_params()
 
 		# bug-fix: not work if input '..' or '.'
 		module_dir="$(lookup_module_dir $1)"
+
 	fi
 
 	echo "[DBG] after parse params($1). module_dir: $module_dir"
@@ -153,6 +157,11 @@ switch_to_dest_dir()
 
 	# parse input params
 	echo "[DBG] input params($#): $@"
+	if [[ "$1" == "out" ]]; then
+		\cd $OUT
+		return
+	fi
+
 	parse_input_params $@
 	if [[ "$module_dir" == $CANNOT_FIND_SUBMOD_DIR ]]; then
 		echo "[DBG] can't find path, use cd instead."
@@ -168,7 +177,7 @@ switch_to_dest_dir()
 	else
 		echo "[DBG] no module specified.  switch to the top dir of current project."
 	fi
-	
+
 	echo "[INF] dest_dir: $dest_dir"
 	if [[ -d "$dest_dir" ]]; then
 		echo "[DBG] change to dir: $dest_dir"
@@ -199,4 +208,3 @@ show_hint() {
 
 
 show_hint
-

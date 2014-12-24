@@ -44,23 +44,27 @@ mmgrep () {
     echo "Adb push commands"
     echo "################################"
 
+    echo "adb root"
+    echo "adb wait-for-device"
+    echo "adb remount"
+
     for line in $(cat ${MM_OUTPUT_FILE_FILTER}) ; do
-	    #echo "[DBG] for line: $line"
-	    path=$(dirname $line)
-	    filename=$(basename $line)
-	    #echo "[DBG] path: $path, filename: $filename"
+        #echo "[DBG] for line: $line"
+        path=$(dirname $line)
+        filename=$(basename $line)
+        #echo "[DBG] path: $path, filename: $filename"
 
-	    # construc the adb command, we need convert '/' to '\' in windows.
-	    if [ -n "${OS_TYPE}" ] ; then
-		    echo "adb push ${path//\//\\}\\${filename} /${path}/"
-	    else
-		    echo "adb push $line /${path}/"
-	    fi
+        # construc the adb command, we need convert '/' to '\' in windows.
+        if [ -n "${OS_TYPE}" ] ; then
+            echo "adb push ${path//\//\\}\\${filename} /${path}/"
+        else
+            echo "adb push $line /${path}/"
+        fi
 
-	    if echo "${line}" | grep -q "/bin/" ; then
-		    #echo "[DBG] executable file, add 'x' permission"
-		    echo "adb shell chmod 777 /$line"
-	    fi
+        if echo "${line}" | grep -q "/bin/" ; then
+            #echo "[DBG] executable file, add 'x' permission"
+            echo "adb shell chmod 777 /$line"
+        fi
     done
 
     # add adb reboot
@@ -70,12 +74,12 @@ mmgrep () {
 
 agrep()
 {
-	grep "$@" * -rn --exclude-dir=".git" --color=auto
+    grep "$@" * -rn --exclude-dir=".git" --color=auto
 }
 
 afind()
 {
-	find . -name  "$@"
+    find . -name  "$@"
 }
 
 
