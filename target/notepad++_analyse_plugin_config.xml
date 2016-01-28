@@ -1,30 +1,44 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <AnalyseDoc xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="./AnalyseDoc.xsd">
-    <SearchText color="green">Opening camera</SearchText>
+    <SearchText doSearch="false" searchType="regex" matchCase="true" bgColor="yellow">mm_stream_streamoff|dataProcRoutine|soar.hal3|processCaptureRequest</SearchText>
+    <SearchText searchType="regex" matchCase="true" color="blue">configureStreams|processCapture</SearchText>
+    <SearchText searchType="regex" color="green">Opening camera|Destroying camera|open camera</SearchText>
     <SearchText color="green">PROFILE_OPEN_CAMERA</SearchText>
+    <SearchText color="green">mm_camera_open</SearchText>
+    <SearchText color="green">closeCamera</SearchText>
+    <SearchText searchType="regex" color="blue">allocateStreamInfoBuf</SearchText>
     <SearchText searchType="regex" color="liteBlue">start_preview|startPreview</SearchText>
     <SearchText searchType="regex" color="liteBlue">stop_preview|stopPreview</SearchText>
     <SearchText searchType="regex" color="blue" bgColor="veryLiteGrey">PROFILE_STOP_PREVIEW|PROFILE_START_PREVIEW|PROFILE_FIRST_PREVIEW_FRAME</SearchText>
-    <SearchText searchType="regex" color="beige">startVideoRecording|stopVideoRecording</SearchText>
-    <SearchText searchType="regex" matchCase="true" color="beige">start_recording|startRecording</SearchText>
-    <SearchText searchType="regex" matchCase="true" color="beige">stop_recording|stopRecording</SearchText>
-    <SearchText searchType="regex" color="brown" bgColor="veryLiteGrey">PROFILE_START_RECORDING|PROFILE_STOP_RECORDING|PROFILE_FIRST_RECORD_FRAME</SearchText>
+    <SearchText doSearch="false" searchType="regex" color="beige">startVideoRecording|stopVideoRecording</SearchText>
+    <SearchText doSearch="false" searchType="regex" matchCase="true" color="beige">start_recording|startRecording|stop_recording|stopRecording</SearchText>
+    <SearchText doSearch="false" searchType="regex" color="brown" bgColor="veryLiteGrey">PROFILE_START_RECORDING|PROFILE_STOP_RECORDING|PROFILE_FIRST_RECORD_FRAME</SearchText>
+    <SearchText searchType="regex" color="white" bgColor="green">prepare snapshot|preparesnapshot|prepare_snap|prepsnapshot|aec est</SearchText>
     <SearchText searchType="regex" color="deepPurple">takePicture|take_picture</SearchText>
-    <SearchText searchType="regex" color="deepPurple">capture_channel_cb_routine|zsl_channel_cb</SearchText>
+    <SearchText searchType="regex" color="deepPurple">capture_channel_cb_routine|zsl_channel_cb|snapshot_channel_cb_routine</SearchText>
     <SearchText searchType="regex" color="deepPurple" bgColor="veryLiteGrey">PROFILE_TAKE_PICTURE|PROFILE_SHUTTER_LAG|PROFILE_YUV_CB_TO_HAL</SearchText>
     <SearchText searchType="regex" color="orange">pproc_module_handle_reprocess_online|postproc_channel_cb_routine</SearchText>
     <SearchText color="beige">encodeData</SearchText>
-    <SearchText color="brown">JpegPictureCallback</SearchText>
+    <SearchText searchType="regex" color="brown">JpegPictureCallback|mPictureDisplayedToJpegCallbackTime|mJpegCallbackFinishTime</SearchText>
     <SearchText color="brown" bgColor="veryLiteGrey">PROFILE_JPEG</SearchText>
-    <SearchText doSearch="false" searchType="regex" color="liteBlue">auto_focus|cancel_auto_focus|processAutoFocusEvent</SearchText>
+    <SearchText searchType="regex" matchCase="true" bgColor="veryLiteBlue" comment="cameraservice/cameraclient">Camera2Client|CameraClient|CameraService|CameraBase|Camera2-|Camera3-|CameraDeviceClient</SearchText>
+    <SearchText searchType="regex" color="liteBlue">autofocus|auto_focus|cancel_auto_focus|processAutoFocusEvent|PROFILE_SENDING_FOCUS_EVT_TO|mAutoFocusTime</SearchText>
+    <SearchText color="liteBlue">PROFILE_AUTO_FOCUS</SearchText>
+    <SearchText searchType="regex" color="grey">af_single_get_value|af_util_done|AF_SUCCESS|AF_FAILED</SearchText>
     <SearchText doSearch="false" searchType="regex" color="grey">startEncode|startThumbnailEncode|EncodeComplete|CompleteMainImage</SearchText>
-    <SearchText doSearch="false" searchType="regex" color="grey">isp_util_dump_stream_planes</SearchText>
+    <SearchText doSearch="false" color="grey">isp_util_dump_stream_planes</SearchText>
+    <SearchText searchType="regex" color="grey">mct_pipeline_process_set</SearchText>
+    <SearchText searchType="regex" matchCase="true" bgColor="liteBeige">STREAM-ON|STREAM-OFF|DEL_STREAM</SearchText>
+    <SearchText searchType="regex" bgColor="beige">mct_pipeline_add_stream_to_linked_streams|mct_stream_start_link</SearchText>
     <SearchText searchType="regex" color="grey">SENSOR_SET_RESOLUTION|SENSOR_START_STREAM</SearchText>
-    <SearchText doSearch="false" color="green">mm_camera_open</SearchText>
-    <SearchText color="grey">mct_pipeline_add_stream_to_linked_streams</SearchText>
-    <SearchText color="grey">mct_stream_start_link</SearchText>
-    <SearchText matchCase="true" bgColor="yellow" comment="fatal error: segment fault">SEGV</SearchText>
+    <SearchText searchType="regex" matchCase="true" bgColor="yellow" comment="fatal error: segment fault">SEGV|SIGFPE|SIGABRT</SearchText>
+    <SearchText matchCase="true" bgColor="red" comment="fatal error: segment fault">Failed to get_buf</SearchText>
+    <SearchText searchType="regex" matchCase="true" bgColor="liteRed" comment="fatal error: segment fault">dropped frame|failed: pp_buf_mgr_get_buf()</SearchText>
     <SearchText matchCase="true" color="grey" bgColor="yellow">ANR</SearchText>
-    <SearchText searchType="regex" bgColor="yellow">RuntimeException</SearchText>
-    <SearchText doSearch="false" searchType="regex" bgColor="yellow">fail|error|fatal</SearchText>
+    <SearchText searchType="regex" bgColor="yellow">RuntimeException|Force finishing activity|NullPointerException|FATAL EXCEPTION</SearchText>
+    <SearchText searchType="regex" bgColor="yellow">SOF freeze|sensor_write_init_settings|mct_t_handler|server_t_handler</SearchText>
+    <SearchText searchType="regex" bgColor="yellow">mm_channel_handle_metadata|ERROR CASE</SearchText>
+    <SearchText searchType="regex" bgColor="yellow">setStreamConfigure</SearchText>
+    <SearchText bgColor="yellow">Sending signal</SearchText>
+    <SearchText searchType="regex" bgColor="liteBeige">Start proc.*camera|Start proc.*gallery|ctivityManager: Displayed</SearchText>
 </AnalyseDoc>
