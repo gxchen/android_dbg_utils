@@ -1,0 +1,162 @@
+#!/bin/bash
+
+#################################################
+#
+## during android system debug, we need to switch
+## between different dirs frequently.
+#
+## for example, apk/framework/hal/propriatatry/kernel_driver.
+## This scripts help to easily switch between these dirs.
+#
+## The main idea as follows:
+##
+## 1. find $ANDROID_ROOT based on cwd
+##
+## 2. convert user abbr words to full path
+#
+#
+################################################
+
+
+
+#
+# declare sub modules list and it's abbreviation(s).
+#
+declare -A SUB_MODULE_LIST
+_LOCAL_PATH_SNAPDRAGON_CAM='packages/apps/SnapdragonCamera'
+_LOCAL_PATH_CAM_HAL='hardware/qcom/camera'
+_LOCAL_PATH_API='frameworks/base/core/java/android/hardware/camera2'
+_LOCAL_PATH_CAM_SVR='frameworks/av/services/camera/libcameraservice'
+_LOCAL_PATH_MM_CAMERA='vendor/qcom/proprietary/mm-camera'
+_LOCAL_PATH_CAM_DRIVER='kernel/drivers/media/platform/msm/camera_v2'
+_LOCAL_PATH_MMI='vendor/qcom/proprietary/fastmmi'
+_LOCAL_PATH_DTS='kernel/arch/arm/boot/dts'
+
+
+# This function is for getting the $ANDROID_ROOT directory,
+# based on current working directory.
+#
+# It will check a specific file along the fs path of cwd,
+# until reaching linux root patch '/'
+#
+# It is originally extracted from 'gettop()',
+# in '$ANDROID_ROOT/build/envsetup.sh'
+get_top_dir() {
+	local TOPFILE=build/core/envsetup.mk
+
+	if [ -f $TOPFILE ]; then
+		PWD= /bin/pwd
+	else
+		local HERE=$PWD;
+		T=;
+		while [ \( ! \( -f $TOPFILE \) \) -a \( $PWD != "/" \) ]; do
+			\cd ..;
+			T=`PWD= /bin/pwd`;
+		done;
+		\cd $HERE;
+		if [ -f "$T/$TOPFILE" ]; then
+			echo $T;
+		fi;
+	fi;
+}
+
+switch_to_dest_dir()
+{
+	# todo: here we reset $android_root every time this function is called.
+	# actually we can keep this var,
+	# so next time, we can re-use $android_root,
+	# instead of call 'get_top_dir' again.
+	android_root=""
+	module_dir=""
+	dest_dir=""
+
+
+	# determine android root dir
+	android_root="$(get_top_dir)"
+	if [[ -z "$android_root" ]]; then
+		echo. "[ERR] not in any andorid project"
+		return
+	fi
+	echo "[INF] android_root: $android_root"
+
+#    if [[ "$#" -eq 0 ]]; then
+#		echo "[DBG] no input params, go to root-dir of cur project"
+#		\cd $android_root
+#		return
+#	fi
+
+	case "$1" in
+		m			module_dir="vendor/qcom/proprietary/mm-camera"
+		;;
+
+		hal)
+			module_dir="hardware/qcom/camera"
+		;;
+
+		ker | msm)
+			module_dir="kernel/drivers/media/platform/msm/camera_v2"
+		;;
+
+		out)
+			module_dir="${OUT}"
+		;;
+
+		snap | apk)
+			module_dir="packages/apps/SnapdragonCamera"
+		;;
+
+		dts)
+			module_dir="kernel/arch/arm/boot/dts"
+		;;
+
+		api)
+			module_dir="frameworks/base/core/java/android/hardware/camera2"
+		;;
+
+		cs)
+			module_dir="frameworks/av/services/camera/libcameraservice"
+		;;
+
+		mmi)
+			module_dir="vendor/qcom/proprietary/fastmmi"
+		;;
+
+		"")
+			module_dir=""
+		;;
+
+		*)
+			return
+		;;
+	esac
+
+
+	# combine full path
+	dest_dir="${android_root}/${module_dir}"
+	if [[ -d "$dest_dir" ]]; then
+		echo "[DBG] change to dir: $dest_dir"
+		\cd $dest_dir
+	fi
+
+	unset android_root
+	unset module_dir
+	unset dest_dir
+}
+
+acd () 
+{
+	switch_to_dest_dir $@
+} > /dev/null
+
+
+show_hint() {
+	echo "======================================="
+	echo "acd()"
+	echo "  -- quick switch between diff folders"
+	echo "     in android project"
+	echo ""
+	echo "======================================="
+}
+
+
+show_hint
