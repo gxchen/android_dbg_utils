@@ -45,6 +45,8 @@ def get_ps_query_name(arg1):
 			query_name = 'mediaserver'
 		elif arg1 == 'mm':
 			query_name = 'mm-qcam'
+		elif arg1 == 'mmi':
+			query_name = 'mmi'
 
 		print("[DBG] argv[1]: " + arg1 + ", query_name: " + query_name)
 	else:
@@ -78,7 +80,7 @@ def get_process_info(query_name):
 
 def kill_process(pid):
 	print('\n[WRN] killing process: ' + pid + '\n')
-	os.system('adb shell kill ' + pid)
+	os.system('adb shell kill -9 ' + pid)
 
 
 def main():
@@ -103,10 +105,10 @@ def main():
 
 
 	while True:
-		(pid, pname) = get_process_info(ps_query_name)
+		(new_pid, pname) = get_process_info(ps_query_name)
 
-		if int(pid) > 0:
-			print("\n[INF] <<<<<< PROCESS INFO (after kill) >>>>>>\n[INF] Full name: " + pname + '\n[INF] PID: ' + pid)
+		if (int(new_pid) > 0) and (int(new_pid) != int(pid)):
+			print("\n[INF] <<<<<< PROCESS INFO (after kill) >>>>>>\n[INF] Full name: " + pname + '\n[INF] PID: ' + new_pid)
 			break
 
 		time.sleep(1)
