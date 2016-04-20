@@ -74,7 +74,7 @@ switch_to_dest_dir()
 	# determine android root dir
 	android_root="$(get_top_dir)"
 	if [[ -z "$android_root" ]]; then
-		echo. "[ERR] not in any andorid project"
+		echo "[ERR] not in any andorid project"
 		return
 	fi
 	echo "[INF] android_root: $android_root"
@@ -86,7 +86,8 @@ switch_to_dest_dir()
 #	fi
 
 	case "$1" in
-		m			module_dir="vendor/qcom/proprietary/mm-camera"
+		mm)
+			module_dir="vendor/qcom/proprietary/mm-camera"
 		;;
 
 		hal)
@@ -99,6 +100,8 @@ switch_to_dest_dir()
 
 		out)
 			module_dir="${OUT}"
+			module_dir="${module_dir##*$android_root}"
+			echo "module_dir: $module_dir"
 		;;
 
 		snap | apk)
