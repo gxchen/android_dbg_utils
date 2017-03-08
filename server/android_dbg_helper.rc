@@ -25,14 +25,14 @@ mmgrep () {
     # > out/target/product/msm8974/system/app/Gallery2.apk
     # > out/target/product/msm8974/system/lib/hw/camera.msm8974.so
     #
-    #  grep -E "^Install:" $MM_OUTPUT_FILE | awk '{print $2}' | tee /tmp/mm_output_filter.txt
+    #  grep -E "^Install: out" $MM_OUTPUT_FILE | awk '{print $2}' | tee /tmp/mm_output_filter.txt
 
     # we can use reg-exp with 'sed' or simply 'cut' cmd to delete string 'out/target/product/'
     # sed -i 's/^out\/target\/product\/[^/]*\///' /tmp/mm_output_filter.txt
     # cat /tmp/mm_output_filter.txt | cut -d'/' -f5- > /tmp/mm_output_filter1.txt
 
     #combine above two commands together:
-    grep -E "^Install:" $MM_OUTPUT_FILE | awk '{print $2}' | cut -d'/' -f5- > ${MM_OUTPUT_FILE_FILTER}
+    grep -E "Install: out" $MM_OUTPUT_FILE | awk '{print $5}' | cut -d'/' -f5- > ${MM_OUTPUT_FILE_FILTER}
 
     echo "################################"
     echo "Files need to be updated."
@@ -74,7 +74,7 @@ mmgrep () {
 
 agrep()
 {
-    grep "$@" * -rn --exclude-dir=".git" --color=auto
+    egrep "$@" * -rn --exclude-dir=".git" --color=auto
 }
 
 afind()
@@ -82,4 +82,25 @@ afind()
     find . -name  "$@"
 }
 
+proxy_on()
+{
+	export http_proxy=http://secure-proxy2.qualcomm.com:9090
+	export https_proxy=http://secure-proxy2.qualcomm.com:9090
 
+	export HTTP_PROXY=http://secure-proxy2.qualcomm.com:9090
+	export HTTPS_PROXY=http://secure-proxy2.qualcomm.com:9090
+
+	echo "seting http proxy:"
+	echo $http_proxy
+	echo $https_proxy
+	echo $HTTP_PROXY
+	echo $HTTPS_PROXY
+}
+
+proxy_off()
+{
+	unset http_proxy
+	unset https_proxy
+	unset HTTP_PROXY
+	unset HTTPS_PROXY
+}

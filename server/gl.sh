@@ -59,6 +59,7 @@ printf "adb shell input keyevent 3\n" >> ld.bat
 #Uncomment below line and comment 2 echo lines below if you want full reboot. 
 #printf "adb reboot\n" >> ld.bat
 echo "for /f \"tokens=2\" %%a in ('\"adb shell ps | findstr mediaserver\"') do adb shell kill -9  %%a" >> ld.bat
+echo "for /f \"tokens=2\" %%a in ('\"adb shell ps | findstr cameraserver\"') do adb shell kill -9  %%a" >> ld.bat
 echo "for /f \"tokens=2\" %%a in ('\"adb shell ps | findstr mm-qcamera-daemon\"') do adb shell kill -9  %%a" >> ld.bat
 
 cd - > /dev/null

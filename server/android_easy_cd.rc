@@ -60,6 +60,31 @@ get_top_dir() {
 	fi;
 }
 
+adjust_module_dir()
+{
+	if [[ "$TARGET_PRODUCT" == "aosp_angler" ]]; then
+		case "$1" in
+			mm)
+				module_dir="vendor/huawei/angler/proprietary/mm-camera"
+			;;
+
+			hal)
+				module_dir="device/huawei/angler/camera"
+			;;
+		esac
+	elif [[ "$TARGET_PRODUCT" == "aosp_bullhead" ]]; then
+		case "$1" in
+			mm)
+				module_dir="vendor/lge/bullhead/proprietary/mm-camera"
+			;;
+
+			hal)
+				module_dir="device/lge/bullhead/camera"
+			;;
+		esac
+	fi
+}
+
 switch_to_dest_dir()
 {
 	# todo: here we reset $android_root every time this function is called.
@@ -124,6 +149,10 @@ switch_to_dest_dir()
 			module_dir="vendor/qcom/proprietary/fastmmi"
 		;;
 
+		DRI)
+			module_dir="drivers/media/platform/msm/camera_v2"
+		;;
+
 		"")
 			module_dir=""
 		;;
@@ -133,6 +162,15 @@ switch_to_dest_dir()
 		;;
 	esac
 
+	# adjust module dir for specific project
+	# especially for google nexus project.
+	adjust_module_dir $1
+
+	# use relative path first
+	if [[ -d "${module_dir}" ]]; then
+		echo "[DBG] change to dir: $dest_dir"
+		\cd ${module_dir}
+	fi
 
 	# combine full path
 	dest_dir="${android_root}/${module_dir}"
