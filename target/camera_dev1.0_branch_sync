@@ -1,0 +1,18 @@
+#!/bin/sh
+GITBRANCH=devtip
+GITREMOTE=quic
+GITREMOTEBRANCH=camera.lnx.1.0-dev.1.0
+MMCAMERA=vendor/qcom/proprietary/mm-camera
+MMCAMERASDK=vendor/qcom/proprietary/mm-camerasdk
+MMCAMERALIB=vendor/qcom/proprietary/mm-camera-lib
+MM3ACORE=vendor/qcom/proprietary/mm-3a-core
+MMCAMERACORE=vendor/qcom/proprietary/mm-camera-core
+MMSTILL=vendor/qcom/proprietary/mm-still
+MMCAMERANOSHIP=vendor/qcom/proprietary/mm-camera-noship
+SCCAMERA=packages/apps/SnapdragonCamera
+HWCAMERA=hardware/qcom/camera
+
+for repo in $MMCAMERA $MMCAMERASDK $MMCAMERALIB $MM3ACORE $MMCAMERACORE $MMSTILL $MMCAMERANOSHIP $SCCAMERA $HWCAMERA; do
+    echo "Syncing to camera.lnx.1.0-dev.1.0 tip for ${repo}"
+    (cd "${repo}" && git fetch $GITREMOTE && git checkout -b $GITBRANCH $GITREMOTE/$GITREMOTEBRANCH && git rebase $GITREMOTE/$GITREMOTEBRANCH && cd -)
+done

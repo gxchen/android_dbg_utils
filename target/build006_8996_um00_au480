@@ -1,0 +1,205 @@
+#!/bin/bash
+
+BUILD_DIR="out"
+BUILD_NAME="AU_LINUX_ANDROID_LA.UM.0.0.07.00.00.197.480"
+BRANCH_TAG="remotes/m/refs/tags/AU_LINUX_ANDROID_LA.UM.0.0.07.00.00.197.480"
+BRANCH_TAG_DEFAULT="remotes/m/LA.UM.0.0"
+
+{
+echo
+echo "#####################################################################"
+echo -n "Enter name to use for GIT branch [enter for auto-name]:"
+read BRANCH_NAME
+if [[ -z "$BRANCH_NAME" ]]; then
+    BRANCH_NAME="base_$RANDOM"
+fi
+BRANCH_NAME="$(echo -e "${BRANCH_NAME}" | tr -d '[[:space:]]')"
+echo "Branch name will be: $BRANCH_NAME"
+
+echo
+echo "#####################################################################"
+echo "### Sinking build... ###"
+sink $BUILD_NAME
+echo "Build sink done!"
+echo
+
+if [ -d "$BUILD_DIR" ]; then
+  echo "### Pre-builds detected, starting recipe!!! ###"
+  echo
+else
+  echo "Pre-build directory not detected, exiting script!!!"
+  echo "Please do an initial build and rerun this script:"
+  echo "source build/envsetup.sh"
+  echo "lunch msm8996-userdebug"
+  echo "build: make -j8"
+  exit
+fi
+
+echo "#####################################################################"
+echo "### Creating Project Branches... ###"
+echo
+
+BR_PROJECTS="kernel/msm-3.18
+             kernel/msm-4.4
+             hardware/qcom/camera
+             vendor/qcom/proprietary/mm-camerasdk
+             vendor/qcom/proprietary/common
+             vendor/qcom/proprietary/mm-still
+             vendor/qcom/proprietary/mm-3a-core
+             vendor/qcom/proprietary/mm-camera-lib
+             vendor/qcom/proprietary/mm-camera-core
+             vendor/qcom/proprietary/mm-camera
+             packages/apps/SnapdragonCamera
+             device/qcom/msm8996
+             device/qcom/common"
+
+echo "### Setting up environment & lunch option ###"
+source build/envsetup.sh
+lunch msm8996-userdebug
+echo
+
+#Correct BRANCH_TAG if needed
+cd hardware/qcom/camera
+if [[ -z $(git branch --all|grep ${BRANCH_TAG}) ]]; then
+  echo "Missing BRANCH_TAG: ${BRANCH_TAG}"
+  BRANCH_TAG=${BRANCH_TAG_DEFAULT}
+  echo "Default BRANCH_TAG to: ${BRANCH_TAG}"
+fi
+croot
+echo 
+
+echo "### stashing old work ###"
+repo forall $BR_PROJECTS -c "git stash;git reset --hard"
+echo
+
+##echo "### Cleaning up git tree ###"
+##echo "Uncomment this garbage-collection call if you start getting git prune errors"
+##repo forall $BR_PROJECTS -c "git gc"
+##echo
+
+echo "### Creating new projects ###"
+echo "branch command is: git checkout -B $BRANCH_NAME $BRANCH_TAG"
+repo forall $BR_PROJECTS -c "git checkout -B $BRANCH_NAME $BRANCH_TAG"
+echo 
+
+echo "### Deleting old branches ###"
+repo forall $BR_PROJECTS -c "git branch | grep 'base_' | xargs git branch -D"
+echo
+
+echo "#####################################################################"
+echo "### Pulling Gerrits... ###"
+
+echo
+echo "### B+M Fixes ###"
+###gpull cp 1738514/1  #power: Add mutex to camera hints
+###gpull cp 1735764/2  #mm-camera2:mct: Not processing SOF if module is in SLEEP state.
+
+echo
+echo "### SENSOR ###"
+gpull cp 1757564/1  #mm-camera: sensor: Add chromatix files for 3m3 and 2l7 sensor
+gpull cp 1745743/8  #mm-camera: sensor: Update LSC reading logic
+gpull cp 1731900/4  #[HACK] 3m3sm driver to work as master
+###gpull cp 1761926    #Disable probe for old 2l7 driver
+###gpull cp 1741208    #mm-camera: sensor: Read degree of rotation from camera config
+###gpull cp 1750145    #[crash camera] mm-camera: sensor: Change wide and tele mount angles
+###gpull cp 1764661    #[HACK]mm-camera: resolve gerrit merge conflict (1741208, 1750145)
+gpull cp 1762650/3  #Dummy gerrit to resolve merge conflict
+
+echo
+echo "### HAL ###"
+###gpull cp 1726397 #Qcamera2: HAL: Add margins to stream size definition            (SBA: 10/14)
+###gpull cp 1732003 #QCamera2: HAL: Add Spatial transform feature mask        (SBA: 10/14)
+###gpull cp 1735744 #QCamera2: Changes to clean-up dual camera snapshot. (Guru - dependancy)
+###gpull cp 1745698 #QCamera2: HAL1: Changes to enable Low Power mode in dual camera (Guru - Dependancy)
+###gpull cp 1734743 #QCamera2: Add new metadata for Spatial Alignment Compute output (Ashvin - Dependancy)
+###gpull cp 1755681 #QCamera2: FOV-control update to interface with Spatial alignment block (FOVC change)
+###gpull cp 1759950 #QCamera2: HAL1: Provide rotation info in meta info (Dependancy - Sensor margin gerrit - Needs lost approval)
+###gpull cp 1760797 #QCamera2: Dual camera: Do not translate zoom for matching FOV B+B module 
+###gpull cp 1759989 #QCamera2: Dual camera: Add setprop to disable low power mode
+gpull cp 1762800/1  #QCamera2: squash HAL gerrits
+gpull cp 1764636/1  #WA: Updated W+T FOV and translate zoom
+
+echo
+echo "### MM-CAMERA ###" 
+###gpull cp 1595196 #mm-camera: imglib: avoid queuing more than max num output bufs (Suraj - Dependancy)
+###gpull cp 1726441 #mm-camera2: mct: Add event to query sensor output size  (SBA: 10/14)
+###gpull cp 1748957 #mm-camera2: mct: Add format to event to query sensor o/p size  (SBA: 10/14)
+###gpull cp 1731216 #mm-camera2: Add buffer identity to buf divert ack struct  (SBA: 10/14)
+###gpull cp 1715681 #mm-camera2: imglib: Multi frame component Framework  (SBA: 10/14)
+###gpull cp 1732306 #mm-camera2: imglib: base: Multi-camera enhancements  (SBA: 10/14)
+###gpull cp 1726361 #mm-camera:stats:af AF param for spatial transform(Titus - Dependancy) (SBA: 10/14)
+###gpull cp 1725786 #mm-camera2: SAT: Spatial Transform module implementation (SBA: 10/14)
+###gpull cp 1737162 #mm-camera: SAT: Handle dualcamera commands + bug fixes  (SBA: 10/14)
+###gpull cp 1743763 #mm-camera2: imglib: SAT: SAT module enhancements  (SBA: 10/21)
+###gpull cp 1752155 #mm-camera: imglib: SAT: Handle Low power mode   (SBA: 10/28)
+###gpull cp 1737771 #mm-camera2: sensor: Add margin support for stream sizes  (Rajesh - Dependency) (SBA: 11/04)
+###gpull cp 1734586 #mm-camera2: isp2: handle sensor output query event  (Senthil - Dependency)  (SBA: 11/04)
+###gpull cp 1749047 #mm-camera: imglib: SAT: Pass stream params as init params  (SBA: 11/04)
+###gpull cp 1744898 #mm-camera2: imglib: base: Handle sensor query output size event  (SBA: 11/04)
+###gpull cp 1744899 #mm-camera2: imglib: SAT: Add handler for sensor query output size  (SBA: 11/04)
+###gpull cp 1754058 #mm-camera2: imglib: MFC: Fix corruption issue  (SBA: 11/04)
+###gpull cp 1757610 #mm-camera2: imglib: SAT: Multiple bug fixes  (SBA: 11/04)
+###gpull cp 1731966 #mm-camera2: pproc: Add SAT to pproc topology (SBA: 11/04)
+###gpull cp 1754713 #mm-camera2: imglib: SAT: Post SAT result to metadata (SBA: 11/04)
+###gpull cp 1762229 #mm-camera2: imglib: SAT: Fix issues with connecting multiple streams (Needs LOST approval)
+###gpull cp 1737191 #mm-camera: imglib: MFC: Disable frame id matching (Needs LOST approval)
+gpull cp 1762804/1  #mm-camera: squash gerrits for SBA
+
+echo
+echo "### MM-CAMERA_LIB/MM-CAMERA-CORE ###"
+###gpull cp 1733168 #mm-camera-lib: SAT: Dummy Wrapper for spatial transform  (SBA: 10/14)
+###gpull cp 1737251 #mm-camera-lib: sat: Update dummy wrapper  (SBA: 10/14)
+###gpull cp 1752980 #mm-camera-lib: SAT: Multiple changes for dummy wrapper  (SBA: 11/04)
+###gpull cp 1753721 #mm-3a-core:stats:af AF param for spatial transform
+gpull cp 1762809/1  #mm-camera-lib: quash SBA gerrits
+gpull cp 1762810/1  #mm-3a-core:stats:af AF param for spatial transform
+gpull cp 1762818/2  #Media Profile: Add more video profiles for extended camera features.
+
+echo
+echo "### HACKS ###"
+###gpull cp 1737191 #mm-camera: imglib: Hack: Multiframeproc disable frame id matching    (Delivered by CE)
+###gpull cp 1742422 #mm-camera: isp: HACK to enable 30 percent margin for SAT   (Delivered by CE)
+###gpull cp 1703701/2  #[HACK] mm-camera: HACK - to enable IMX258 bayer sensor as mono sensor
+###gpull cp 1733081/3  #[HACK] SnapdragonCamera: HACK to enable wide+tele on HAL3
+###gpull cp 1754787/1  #[HACK] QCamera2: hack force 2-back camera to be type=AUX
+
+echo
+echo "## Gerrit pull done!!! ###"
+echo
+
+echo "#####################################################################"
+echo "### Building projects... ###"
+
+if [ -d "$BUILD_DIR" ]; then
+  ###echo "### make KERNEL ###"
+  ###make KERNEL_DEFCONFIG=msm-perf_defconfig -j8 bootimage
+  ###echo "### make msm8996 device ###"
+  ###cd device/qcom/msm8996;mm -B -j8;croot
+  echo "### make hal ###"
+  cd hardware/qcom/camera;mm -B -j8;croot
+  echo "###  make mm-still ###"
+  cd vendor/qcom/proprietary/mm-still;mm -B -j8;croot
+  echo "### make mm-camera-core ###"
+  cd vendor/qcom/proprietary/mm-camera-core;mm -B -j8;croot
+  echo "### make mm-3a-core ###"
+  cd vendor/qcom/proprietary/mm-3a-core;mm -B -j8;croot
+  echo "### make mm-camera-lib ###"
+  cd vendor/qcom/proprietary/mm-camera-lib;mm -B -j8;croot
+  echo "### make mm-camera ###"
+  cd vendor/qcom/proprietary/mm-camera;mm -B -j8;croot
+  echo "### make SnapdragonCamera ###"
+  cd packages/apps/SnapdragonCamera/;mm -B -j8;croot 
+  echo "### make system.img ###"
+  make -j8 snod
+else
+  echo "Pre-build directory not detected, exiting script!!!"
+  echo "Please do an initial build: make -j8"
+  echo "Then rerun this script"
+  exit
+fi
+
+echo
+echo "### Build done!!! ###"
+echo "Note: build log can be found here: build.log"
+
+} 2>&1 | tee build.log
